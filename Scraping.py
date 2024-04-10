@@ -24,14 +24,14 @@ import time
 
 ############################## INICIO ##############################
 # Cargamos el webdriver de selenium
-def web_driver():
+def web_driver() -> webdriver:
     service = webdriver.ChromeService(executable_path=r"C:\Users\Ivan\Documents\CODING\Python\chromedriver.exe")
     driver = webdriver.Chrome(service=service)
     driver.get("https://www.compugarden.com.ar/ARTICULOS/CAT_ID=52/SCAT_ID=-1/SCA_ID=-1/m=0/BUS=/compugarden.aspx")
     return driver
 
 ############################## AVERIGUANDO CUANTAS PAGINAS HAY EN ESTA CATEGORIA ##############################
-def cant_de_paginas(driver):
+def cant_de_paginas(driver) -> int:
     show_items = int(driver.find_element(By.ID, value="cant_a_mostrar").get_attribute("value")) # Cantidad de productos mostrados por pagina
     total_items_raw = driver.find_element(By.XPATH, value="/html/body/div[3]/div[1]/section/div/div[2]/div[2]/div[2]/div/p").text
     total_items_raw = ' '.join(total_items_raw.split()) # Se borran los espacios extras
@@ -43,11 +43,17 @@ def cant_de_paginas(driver):
 
 ############################## BUCLE DE SCRAPEO ##############################
 page = 1
-while page < (total_pages + 1):
-    def parsear_pagina():
+while page < (cant_de_paginas() + 1):
+    
+    def respuesta_url(page:int) -> :
         time.sleep(2)
-        URL_BASE = f"https://www.compugarden.com.ar/ARTICULOS/CAT_ID=52;SCAT_ID=-1;SCA_ID=-1;m=0;BUS=;A_PAGENUMBER={page};/compugarden.aspx"
-        pedido_obtenido = requests.get(URL_BASE)
+        base_url = f"https://www.compugarden.com.ar/ARTICULOS/CAT_ID=52;SCAT_ID=-1;SCA_ID=-1;m=0;BUS=;A_PAGENUMBER={page};/compugarden.aspx"
+        pedido_obtenido = requests.get(base_url)
+        if pedido_obtenido.status_code != 200:
+            return print("Pagina caida")
+        return pedido_obtenido
+    
+    def parsear_pagina(pedido_obtenido):
         html_obtenido = pedido_obtenido.text
         soup = BeautifulSoup(html_obtenido,"html.parser") # Parseamos el HTML
         return soup
