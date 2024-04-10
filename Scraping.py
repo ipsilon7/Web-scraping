@@ -24,15 +24,27 @@ import time
 
 ############################## INICIO ##############################
 # Cargamos el webdriver de selenium
-def web_driver() -> webdriver:
+
+
+def web_driver() -> None:
     service = webdriver.ChromeService(executable_path=r"C:\Users\Ivan\Documents\CODING\Python\chromedriver.exe")
     driver = webdriver.Chrome(service=service)
     driver.get("https://www.compugarden.com.ar/ARTICULOS/CAT_ID=52/SCAT_ID=-1/SCA_ID=-1/m=0/BUS=/compugarden.aspx")
     return driver
 
 ############################## AVERIGUANDO CUANTAS PAGINAS HAY EN ESTA CATEGORIA ##############################
+
+
 def cant_de_paginas(driver) -> int:
-    show_items = int(driver.find_element(By.ID, value="cant_a_mostrar").get_attribute("value")) # Cantidad de productos mostrados por pagina
+    """Averiguar cuantas paginas tiene la categoria
+
+    Args:
+        driver (_type_): _description_
+
+    Returns:
+        int: total de paginas de la categoria
+    """
+    show_items = int(driver.find_element(By.ID, value="cant_a_mostrar").get_attribute("value"))  # Cantidad de productos mostrados por pagina
     total_items_raw = driver.find_element(By.XPATH, value="/html/body/div[3]/div[1]/section/div/div[2]/div[2]/div[2]/div/p").text
     total_items_raw = ' '.join(total_items_raw.split()) # Se borran los espacios extras
     total_items = int(total_items_raw[7:9]) # Se corta la parte con la cantidad de productos y se transforma a entero
@@ -45,7 +57,15 @@ def cant_de_paginas(driver) -> int:
 page = 1
 while page < (cant_de_paginas() + 1):
     
-    def respuesta_url(page:int) -> :
+    def respuesta_url(page: int):
+        """Estado de la url
+
+        Args:
+            page (int): Numero de pagina
+
+        Returns:
+            _type_: _description_
+        """
         time.sleep(2)
         base_url = f"https://www.compugarden.com.ar/ARTICULOS/CAT_ID=52;SCAT_ID=-1;SCA_ID=-1;m=0;BUS=;A_PAGENUMBER={page};/compugarden.aspx"
         pedido_obtenido = requests.get(base_url)
@@ -54,39 +74,60 @@ while page < (cant_de_paginas() + 1):
         return pedido_obtenido
     
     def parsear_pagina(pedido_obtenido):
+        """Parseo de la url
+
+        Args:
+            pedido_obtenido (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
         html_obtenido = pedido_obtenido.text
-        soup = BeautifulSoup(html_obtenido,"html.parser") # Parseamos el HTML
+        soup = BeautifulSoup(html_obtenido, "html.parser")  # Parseamos el HTML
         return soup
+    
     ############################## EXTRACCION DE DATOS NUEVOS ##############################
     # Obtener y extraer datos
-    divs_products = soup.find_all('div', class_='product')
-    divs_precios = soup.find_all('div', class_='price')
-    products = []
-    precios = []
-    # Bucle para obtener los productos
-    for z in divs_products:
-        product = z.h4.get_text(strip=True)
-        products.append(product)
-    # Bucle para obtener los precios
-    for x in divs_precios:
-        price = x.get_text(strip=True).replace('$ ', '')
-        price = price.replace('.', '')
-        price = price.replace(',', '.')
-        price = float(price)
-        precios.append(price)
-   
+    def extraccion_de_datos(soup):
+        divs_products = soup.find_all('div', class_='product')
+        divs_precios = soup.find_all('div', class_='price')
+        return divs_precios, divs_products
+    # Bucle para agregar los productos a la lista
+
+    def lista_productos(divs_products):
+        products = []
+        for z in divs_products:
+            product = z.h4.get_text(strip=True)
+            products.append(product)
+        return products
+    # Bucle para agregar los precios a la lista
+
+    def lista_precios(divs_precios):
+        precios = []
+        for x in divs_precios:
+            price = x.get_text(strip=True).replace('$ ', '')
+            price = price.replace('.', '')
+            price = price.replace(',', '.')
+            price = float(price)
+            precios.append(price)
+        return precios
 
     def fecha_actual() -> str:
+        """Fecha actual del scrapeo
+
+        Returns:
+            str: fecha con formato para tabla
+        """
         current_date = date.today()
         formatted_date = current_date.strftime("%d-%m-%Y")
         return formatted_date
-    
-    def fecha_por_producto(formatted_date:str, products:list) -> list:
+
+    def fecha_por_producto(formatted_date: str, products: list) -> list:
         fecha = []
         i = 0
         while i < len(products):
             fecha.append(formatted_date)
-            i+=1
+            i += 1
         return fecha
 
     ############################## GUARDAR DATOS EN DATAFRAME ##############################
