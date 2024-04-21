@@ -57,6 +57,7 @@ def cant_de_paginas(driver) -> int:
         total_pages += 1
     return total_pages
 
+
 # BUCLE DE SCRAPEO
 
 
@@ -171,16 +172,18 @@ def concatenar_tablas_anterior_nueva(tabla_ant_df, tabla):
     tabla_concatenada = pd.concat([tabla_ant_df, tabla], axis=0, ignore_index=True)
     return tabla_concatenada
 
-    # GUARDAR ARCHIVO
-    # Crear excel
+
+# GUARDAR ARCHIVO
 
 
 def guardar_excel(tabla_concatenada):
+    # Crear excel
     writer = pd.ExcelWriter("Historial_de_precios.xlsx")
     # Guardar dataframe a excel
     tabla_concatenada.to_excel(writer)
     # Cerrar
     writer.close()
+
 
 # FINAL
 
@@ -193,6 +196,20 @@ def finalizar(driver):
 def main():
     driver_chrome = web_driver()
     total_paginas = cant_de_paginas(driver_chrome)
+    web_driver()
+    cant_de_paginas
+    respuesta_url(page)
+    parsear_pagina(pedido_obtenido)
+    extraccion_de_datos(soup)
+    lista_productos(divs_products)
+    lista_precios(divs_precios)
+    fecha_actual()
+    fecha_por_producto(formatted_date, products)
+    crear_dataframe(products, precios, fecha)
+    recuperar_tabla_anterior()
+    concatenar_tablas_anterior_nueva(tabla_ant_df, tabla)
+    guardar_excel(tabla_concatenada)
+    finalizar(driver_chrome)
 
 
 if __name__ == '__main__':
