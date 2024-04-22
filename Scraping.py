@@ -95,23 +95,26 @@ def parsear_pagina(pedido_obtenido):
 # Obtener y extraer datos
 
 
-def extraccion_de_datos(soup):
+def extraccion_de_productos(soup):
     divs_products = soup.find_all('div', class_='product')
+    return divs_products
+
+
+def extraccion_de_precios(soup):
     divs_precios = soup.find_all('div', class_='price')
-    return divs_precios, divs_products
-# Bucle para agregar los productos a la lista
+    return divs_precios
 
 
 def lista_productos(divs_products):
     products = []
+    # Bucle para agregar los productos a la lista
     for z in divs_products:
         product = z.h4.get_text(strip=True)
         products.append(product)
     return products
-# Bucle para agregar los precios a la lista
 
 
-def lista_precios(divs_precios):
+def lista_precios(divs_precios):  # Bucle para agregar los precios a la lista
     precios = []
     for x in divs_precios:
         price = x.get_text(strip=True).replace('$ ', '')  # Quita espacios en blanco y simbolo $
@@ -156,8 +159,9 @@ def crear_dataframe(products, precios, fecha):
     return tabla
 
 # AGREGAR AL ARCHIVO DEL HISTORIAL
-# Leer archivo excel, especificando el tipo de dato de cada columna ("nombre de columna": tipo de dato),
-# en el argumento sheetname se especifica el nombre de la pestaña donde estan los datos
+# Leer archivo excel, especificando el tipo de dato de cada columna ("nombre
+# de columna": tipo de dato), en el argumento sheetname se especifica el
+# nombre de la pestaña donde estan los datos
 
 
 def recuperar_tabla_anterior():
@@ -196,19 +200,25 @@ def finalizar(driver):
 def main():
     driver_chrome = web_driver()
     total_paginas = cant_de_paginas(driver_chrome)
-    web_driver()
-    cant_de_paginas
-    respuesta_url(page)
-    parsear_pagina(pedido_obtenido)
-    extraccion_de_datos(soup)
-    lista_productos(divs_products)
-    lista_precios(divs_precios)
-    fecha_actual()
-    fecha_por_producto(formatted_date, products)
-    crear_dataframe(products, precios, fecha)
-    recuperar_tabla_anterior()
-    concatenar_tablas_anterior_nueva(tabla_ant_df, tabla)
-    guardar_excel(tabla_concatenada)
+    pagina = 0
+    while pagina <= total_paginas:
+        estado_url = respuesta_url(total_paginas)
+        parseo = parsear_pagina(estado_url)
+        productos = extraccion_de_productos(parseo)
+        precios = extraccion_de_precios(parseo)
+        lista_de_productos = lista_productos(productos)
+        lista_de_precios = lista_precios(precios)
+        fecha_formateada = fecha_actual()
+        fecha_multiplicada = fecha_por_producto(fecha_formateada,
+                                                lista_de_productos)
+        tabla_nueva = crear_dataframe(lista_de_productos,
+                                      lista_de_precios,
+                                      fecha_multiplicada)
+        tabla_anterior = recuperar_tabla_anterior()
+        tabla_conc = concatenar_tablas_anterior_nueva(tabla_anterior,
+                                                      tabla_nueva)
+        guardar_excel(tabla_conc)
+        pagina += 1
     finalizar(driver_chrome)
 
 
