@@ -31,7 +31,7 @@ def web_driver() -> Any:
     """Cargar webdriver de selenium
 
     Returns:
-        Any:
+        Any: _description_
     """
     service = webdriver.ChromeService(executable_path=r"C:\Users\Ivan\Documents\CODING\Python\chromedriver.exe")
     driver = webdriver.Chrome(service=service)
@@ -39,11 +39,11 @@ def web_driver() -> Any:
     return driver
 
 
-def cant_de_paginas(driver) -> int:
+def cant_de_paginas(driver: Any) -> int:
     """Averiguar cuantas paginas tiene la categoria
 
     Args:
-        driver (_type_): _description_
+        driver (Any): _description_
 
     Returns:
         int: total de paginas de la categoria
@@ -61,14 +61,14 @@ def cant_de_paginas(driver) -> int:
 # BUCLE DE SCRAPEO
 
 
-def respuesta_url(page: int):
+def respuesta_url(page: int) -> Any:
     """Estado de la url
 
     Args:
         page (int): Numero de pagina
 
     Returns:
-        _type_: _description_
+        Any: Solicitud obtenida de la url
     """
     time.sleep(2)
     base_url = f"https://www.compugarden.com.ar/ARTICULOS/CAT_ID=52;SCAT_ID=-1;SCA_ID=-1;m=0;BUS=;A_PAGENUMBER={page};/compugarden.aspx"
@@ -85,7 +85,7 @@ def parsear_pagina(pedido_obtenido):
         pedido_obtenido (_type_): _description_
 
     Returns:
-        _type_: _description_
+        Any: _description_
     """
     html_obtenido = pedido_obtenido.text
     soup = BeautifulSoup(html_obtenido, "html.parser")  # Parseamos el HTML
