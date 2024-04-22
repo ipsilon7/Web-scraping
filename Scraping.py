@@ -200,25 +200,25 @@ def finalizar(driver):
 def main():
     driver_chrome = web_driver()
     total_paginas = cant_de_paginas(driver_chrome)
-    #pagina = 1
-    #while pagina <= total_paginas:
-    pedido_obtenido = respuesta_url(total_paginas)
-    soup = parsear_pagina(pedido_obtenido)
-    divs_products = extraccion_de_productos(soup)
-    divs_precios = extraccion_de_precios(soup)
-    products = lista_productos(divs_products)
-    precios = lista_precios(divs_precios)
-    formatted_date = fecha_actual()
-    fecha = fecha_por_producto(formatted_date,
-                               products)
-    tabla = crear_dataframe(products,
-                            precios,
-                            fecha)
-    tabla_ant_df = recuperar_tabla_anterior()
-    tabla_concatenada = concatenar_tablas_anterior_nueva(tabla_ant_df,
-                                                         tabla)
-    guardar_excel(tabla_concatenada)
-    #    pagina += 1
+    pagina = 1
+    while pagina <= total_paginas:
+        pedido_obtenido = respuesta_url(pagina)
+        soup = parsear_pagina(pedido_obtenido)
+        divs_productos = extraccion_de_productos(soup)
+        divs_precios = extraccion_de_precios(soup)
+        productos = lista_productos(divs_productos)
+        precios = lista_precios(divs_precios)
+        fecha_formateada = fecha_actual()
+        fecha = fecha_por_producto(fecha_formateada,
+                                   productos)
+        tabla = crear_dataframe(productos,
+                                precios,
+                                fecha)
+        tabla_ant_df = recuperar_tabla_anterior()
+        tabla_concatenada = concatenar_tablas_anterior_nueva(tabla_ant_df,
+                                                             tabla)
+        guardar_excel(tabla_concatenada)
+        pagina += 1
     finalizar(driver_chrome)
 
 
