@@ -58,9 +58,6 @@ def cant_de_paginas(driver: Any) -> int:
     return total_pages
 
 
-# BUCLE DE SCRAPEO
-
-
 def respuesta_url(page: int) -> Any:
     """Estado de la url
 
@@ -78,7 +75,7 @@ def respuesta_url(page: int) -> Any:
     return pedido_obtenido
 
 
-def parsear_pagina(pedido_obtenido):
+def parsear_pagina(pedido_obtenido) -> Any:
     """Parseo de la url
 
     Args:
