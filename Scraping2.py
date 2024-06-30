@@ -26,18 +26,15 @@ import time
 # INICIO
 
 # Cargamos el webdriver de selenium
-URL = "https://www.compugarden.com.ar/ARTICULOS/CAT_ID=52/SCAT_ID=-1/SCA_ID=-1/m=0/BUS=/compugarden.aspx"
 service = webdriver.ChromeService(executable_path=r"C:\Users\Ivan\Documents\CODING\Python\chromedriver.exe")
 driver = webdriver.Chrome(service=service)
-driver.get(URL)
+driver.get("https://www.compugarden.com.ar/ARTICULOS/CAT_ID=52/SCAT_ID=-1/SCA_ID=-1/m=0/BUS=/compugarden.aspx")
 time.sleep(2)
-
 # Verigicamos el estado de la URL
 base_url = f"https://www.compugarden.com.ar/ARTICULOS/CAT_ID=52;SCAT_ID=-1;SCA_ID=-1;m=0;BUS=;A_PAGENUMBER={page};/compugarden.aspx"
 pedido_obtenido = requests.get(base_url)
 if pedido_obtenido.status_code != 200:
     print("Pagina inaccesible")
-
 # Parseamos la pagina
 html_obtenido = pedido_obtenido.text  # Conversion a texto
 soup = BeautifulSoup(html_obtenido, "html.parser")  # Parseo
