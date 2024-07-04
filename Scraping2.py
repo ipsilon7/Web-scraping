@@ -18,6 +18,7 @@ from selenium.webdriver.chrome.service import Service as ChromeService
 import requests
 from bs4 import BeautifulSoup
 import time
+from datetime import date
 
 
 class WebScraper:
@@ -29,8 +30,6 @@ class WebScraper:
     def start_driver(self):
         service = ChromeService(executable_path=self.driver_path)
         self.driver = webdriver.Chrome(service=service)
-
-    def fetch_page(self):
         self.driver.get(self.url)
         time.sleep(2)
 
@@ -54,6 +53,39 @@ class WebScraper:
             soup = self.parse_page(html)
             return soup
         return None
+
+
+class ScraperProductos:
+    def __init__(self, soup):
+        self.soup = soup
+        self.products = []
+        self.precios = []
+
+    def extraccion_de_productos(self):
+        divs_products = self.soup.find_all('div', class_='product')
+        self.products = [div.h4.get_text(strip=True) for div in divs_products]
+
+    def extraccion_de_precios(self):
+        divs_precios = self.soup.find_all('div', class_='price')
+        self.precios = []
+        for div in divs_precios:
+            price = div.get_text(strip=True).replace('$ ', '')
+            price = price.replace('.', '')
+            price = price.replace(',', '.')
+            price = float(price)
+            self.precios.append(price)
+
+    def lista_productos(self):
+        return self.products
+
+    def lista_precios(self):
+        return self.precios
+
+    @staticmethod
+    def fecha_de_producto(products: list) -> list:
+        current_date = date.today()
+        formatted_date = current_date.strftime("%d-%m-%Y")
+        return [formatted_date] * len(products)
 
 
 if __name__ == '__main__':
