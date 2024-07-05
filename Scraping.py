@@ -44,16 +44,9 @@ soup = BeautifulSoup(html_obtenido, "html.parser")  # Parseo
 
 ########################################################
 
+Se puede optimizar esta funcion?:
 
-def cant_de_paginas(driver: Any) -> int:
-    """Averiguar cuantas paginas tiene la categoria
-
-    Args:
-        driver (Any): _description_
-
-    Returns:
-        int: total de paginas de la categoria
-    """
+def cant_de_paginas(driver):
     show_items = int(driver.find_element(By.ID, value="cant_a_mostrar").get_attribute("value"))  # Cantidad de productos mostrados por pagina
     total_items_raw = driver.find_element(By.XPATH, value="/html/body/div[3]/div[1]/section/div/div[2]/div[2]/div[2]/div/p").text
     total_items_raw = ' '.join(total_items_raw.split())  # Se borran los espacios extras
@@ -119,7 +112,6 @@ def fecha_por_producto(formatted_date: str, products: list) -> list:
 # GUARDAR DATOS EN DATAFRAME
 # Crear diccionario para el dataframe
 
-
 def crear_dataframe(products, precios, fecha):
     data = dict([
                 ("Prcesadores", products),
@@ -135,7 +127,6 @@ def crear_dataframe(products, precios, fecha):
 # de columna": tipo de dato), en el argumento sheetname se especifica el
 # nombre de la pestaña donde estan los datos
 
-
 def recuperar_tabla_anterior():
     tabla_ant = pd.read_excel('Historial_de_precios.xlsx', sheet_name=0, header=0, converters={'Procesadores': str, 'Precio': float, 'Fecha': str})
     # Convertimos en dataframe los datos recuperados del archivo antiguo.
@@ -143,14 +134,12 @@ def recuperar_tabla_anterior():
     tabla_ant_df = tabla_ant_df.drop(tabla_ant_df.columns[[0]], axis=1)  # Borrar primer columna
     return tabla_ant_df
 
-
 def concatenar_tablas_anterior_nueva(tabla_ant_df, tabla):
     tabla_concatenada = pd.concat([tabla_ant_df, tabla], axis=0, ignore_index=True)
     return tabla_concatenada
 
 
 # GUARDAR ARCHIVO
-
 
 def guardar_excel(tabla_concatenada):
     # Crear excel

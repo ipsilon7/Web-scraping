@@ -140,3 +140,49 @@ if __name__ == '__main__':
     for obj in (bob, sue, tom):
         obj.giveRaise(.10)  # run this obj's giveRaise
         print(obj)  # run common __str__ method
+
+Necesito agregar esta funcion:
+
+def cant_de_paginas(driver):
+    show_items = int(driver.find_element(By.ID, value="cant_a_mostrar").get_attribute("value"))  # Cantidad de productos mostrados por página
+    total_items_raw = driver.find_element(By.XPATH, value="/html/body/div[3]/div[1]/section/div/div[2]/div[2]/div[2]/div/p").text
+    total_items_raw = total_items_raw.strip().replace('\n', '')  # Quita espacios y saltos de línea
+    total_items = int(re.search(r'(\d+)', total_items_raw).group())  # Extrae el primer número encontrado
+    total_pages = math.ceil(total_items / show_items)  # Redondea hacia arriba
+    return total_pages
+
+Dentro de este objeto:
+
+class WebScraper:
+    def __init__(self, url, driver_path):
+        self.url = url
+        self.driver_path = driver_path
+        self.driver = None
+
+    def start_driver(self):
+        service = ChromeService(executable_path=self.driver_path)
+        self.driver = webdriver.Chrome(service=service)
+        self.driver.get(self.url)
+        time.sleep(2)
+
+    def check_page_status(self, base_url):
+        response = requests.get(base_url)
+        if response.status_code != 200:
+            print("Pagina inaccesible")
+            return None
+        return response.text
+
+    def parse_page(self, html):
+        soup = BeautifulSoup(html, "html.parser")
+        return soup
+
+
+    def scrape(self):
+        self.start_driver()
+        self.fetch_page()
+        base_url = "https://www.compugarden.com.ar/ARTICULOS/CAT_ID=52;SCAT_ID=-1;SCA_ID=-1;m=0;BUS=;A_PAGENUMBER=1;/compugarden.aspx"
+        html = self.check_page_status(base_url)
+        if html:
+            soup = self.parse_page(html)
+            return soup
+        return None
